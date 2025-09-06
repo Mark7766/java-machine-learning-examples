@@ -1,12 +1,13 @@
 HELP.md
 target/
+../.DS_Store
+.DS_Store
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 .gitattributes
 .mvn/
 cats_vs_dogs/
-model/
 mvnw
 mvnw.cmd
 ### STS ###
