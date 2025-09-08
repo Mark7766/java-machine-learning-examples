@@ -53,8 +53,10 @@
 		</dependency>
 		<dependency>
 			<groupId>ai.djl.mxnet</groupId>
-			<artifactId>mxnet-native-auto</artifactId>
-			<version>${djl.version}</version>
+			<artifactId>mxnet-native-mkl</artifactId>
+			<version>1.9.1</version>
+			<classifier>win-x86_64</classifier>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- CSV Processing -->
 		<dependency>
