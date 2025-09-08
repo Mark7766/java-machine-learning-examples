@@ -14,7 +14,7 @@
 - 数据预处理,使用Java处理图像（调整大小、归一化），执行类[ImagePreprocessor](src/main/java/com/sandy/ml/image/classification/ImagePreprocessor.java)
 - 使用DJL训练一个简单的CNN模型,执行类[TrainCatsVsDogs](src/main/java/com/sandy/ml/image/classification/TrainCatsVsDogs.java)
 # 验证推理效果，将训练好的模型部署为本地服务，使用Java进行推理
-- 执行类[ImagePreprocessor](src/main/java/com/sandy/ml/image/classification/ImagePreprocessor.java)
+- 执行类[Inference](src/main/java/com/sandy/ml/image/classification/Inference.java)
 # 其他类
 - [ImageClassificationService](src/main/java/com/sandy/ml/image/classification/ImageClassificationService.java) 推理service，进行推理逻辑处理，满足web界面调用的逻辑处理要求
 - [ImageClassificationController](src/main/java/com/sandy/ml/image/classification/ImageClassificationController.java)猫狗识别API

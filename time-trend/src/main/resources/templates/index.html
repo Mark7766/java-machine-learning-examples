@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TimeTrend - Time Series Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.min.js"></script>
+    <style>
+        /* Industrial Tech Style */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1C2526;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            background: linear-gradient(145deg, #2A3439, #1C2526);
+            border: 2px solid #4A5A6B;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            color: #00A1D6;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.5em;
+            color: #E0E0E0;
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #E0E0E0;
+        }
+        input[type="file"] {
+            padding: 10px;
+            background-color: #2A3439;
+            border: 1px solid #4A5A6B;
+            color: #E0E0E0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #00A1D6;
+            color: #E0E0E0;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 161, 214, 0.3);
+        }
+        button:hover {
+            background-color: #008BB5;
+            transform: translateY(-2px);
+        }
+        .error {
+            color: #FF4C4C;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+        canvas {
+            background-color: rgba(28, 37, 38, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>TimeTrend: Time Series Prediction</h1>
+    <form method="post" enctype="multipart/form-data" action="/upload">
+        <label for="file">Upload CSV (format: timestamp, value):</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+        <button type="submit">Upload and Predict</button>
+    </form>
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${dataModel.timestamps}">
+        <h2>Data and Prediction</h2>
+        <canvas id="timeSeriesChart"></canvas>
+    </div>
+</div>
+<script>
+    // Inline Chart.js logic
+    const timestamps = /*[[${dataModel.timestamps}]]*/ [];
+    const values = /*[[${dataModel.values}]]*/ [];
+    const predictions = /*[[${dataModel.predictions}]]*/ [];
+
+    if (timestamps.length > 0) {
+        const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timestamps.map(t => new Date(t).toLocaleDateString()),
+                datasets: [
+                    {
+                        label: 'Historical Data',
+                        data: values,
+                        borderColor: '#00A1D6',
+                        backgroundColor: 'rgba(0, 161, 214, 0.2)',
+                        fill: false,
+                        tension: 0.1,
+                        pointBackgroundColor: '#E0E0E0'
+                    },
+                    {
+                        label: 'Predictions',
+                        data: Array(values.length).fill(null).concat(predictions),
+                        borderColor: '#FF4C4C',
+                        backgroundColor: 'rgba(255, 76, 76, 0.2)',
+                        fill: false,
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        pointBackgroundColor: '#E0E0E0'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            color: '#E0E0E0',
+                            font: { size: 14, family: 'Roboto Mono' }
+                        },
+                        ticks: { color: '#E0E0E0' },
+                        grid: { color: '#4A5A6B' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value',
+                            color: '#E0E0E0',
+                            font: { size: 14, family: 'Roboto Mono' }
+                        },
+                        ticks: { color: '#E0E0E0' },
+                        grid: { color: '#4A5A6B' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#E0E0E0',
+                            font: { family: 'Roboto Mono' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
