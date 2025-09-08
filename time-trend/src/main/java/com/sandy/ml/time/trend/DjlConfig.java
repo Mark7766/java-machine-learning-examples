@@ -13,11 +13,17 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.util.Map;
+import ai.djl.engine.Engine;
+
 @Configuration
 public class DjlConfig {
 
     @Bean
     public ZooModel<TimeSeriesData, Forecast> deepARModel() throws IOException, ModelException {
+        // 检查 MXNet 引擎是否可用
+        if (!Engine.getAllEngines().contains("MXNet")) {
+            throw new IllegalStateException("MXNet engine is not available in the classpath");
+        }
         Map<String, ?> arguments = Map.of(
                 "context_length", 24,
                 "prediction_length", 12,
@@ -25,11 +31,11 @@ public class DjlConfig {
         );
         Translator<TimeSeriesData, Forecast> translator = DeepARTranslator.builder(arguments).build();
 
-        Criteria<TimeSeriesData, Forecast> criteria= Criteria.builder()
+        Criteria<TimeSeriesData, Forecast> criteria = Criteria.builder()
                 .setTypes(TimeSeriesData.class, Forecast.class)
-                .optModelUrls("https://resources.djl.ai/test-models/pytorch/timeseries/deepar_airpassenger.zip")
+                .optModelUrls("djl://ai.djl.mxnet/deepar/0.0.1/airpassengers")
                 .optTranslator(translator)
-                .optEngine("MXNet") // Explicitly specify MXNet
+                .optEngine("MXNet")
                 .optOption("device", "cpu")
                 .build();
         return ModelZoo.loadModel(criteria);

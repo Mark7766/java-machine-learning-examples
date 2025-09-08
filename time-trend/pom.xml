@@ -51,6 +51,11 @@
 			<artifactId>timeseries</artifactId>
 			<version>${djl.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>ai.djl.mxnet</groupId>
+			<artifactId>mxnet-native-auto</artifactId>
+			<version>${djl.version}</version>
+		</dependency>
 		<!-- CSV Processing -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
