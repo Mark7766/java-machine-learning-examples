@@ -29,7 +29,7 @@ public class DjlConfig {
                 .setTypes(TimeSeriesData.class, Forecast.class)
                 .optModelUrls("https://resources.djl.ai/test-models/pytorch/timeseries/deepar_airpassenger.zip")
                 .optTranslator(translator)
-                .optEngine("PyTorch")
+                .optEngine("MXNet") // Explicitly specify MXNet
                 .optOption("device", "cpu")
                 .build();
         return ModelZoo.loadModel(criteria);
