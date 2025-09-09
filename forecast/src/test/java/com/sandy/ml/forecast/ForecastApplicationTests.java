@@ -1,10 +1,10 @@
-package com.sandy.ml.time.trend;
+package com.sandy.ml.forecast;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TimeTrendApplicationTests {
+class ForecastApplicationTests {
 
 	@Test
 	void contextLoads() {

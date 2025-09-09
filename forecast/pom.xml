@@ -9,13 +9,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sandy.ml</groupId>
-	<artifactId>time-trend</artifactId>
+	<artifactId>forecast</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>time-trend</name>
-	<description>TimeTrend 是一个开源的、轻量级的时序数据预测演示项目，专为 Java 开发者设计，帮助他们快速上手深度学习在时序数据预测中的应用</description>
+	<name>forecast</name>
+	<description>forecast是一个开源的、轻量级的时序数据预测演示项目，专为 Java 开发者设计，帮助他们快速上手深度学习在时序数据预测中的应用</description>
 	<properties>
 		<java.version>17</java.version>
-		<djl.version>0.30.0</djl.version>
+		<djl.version>0.34.0</djl.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -27,19 +27,19 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
+			<groupId>ai.djl.timeseries</groupId>
+			<artifactId>timeseries</artifactId>
+			<version>${djl.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- DJL Dependencies -->
 		<dependency>
 			<groupId>ai.djl</groupId>
 			<artifactId>api</artifactId>
 			<version>${djl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.9</version>
 		</dependency>
 		<dependency>
 			<groupId>ai.djl.mxnet</groupId>
@@ -47,38 +47,23 @@
 			<version>${djl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ai.djl.timeseries</groupId>
-			<artifactId>timeseries</artifactId>
+			<groupId>ai.djl.mxnet</groupId>
+			<artifactId>mxnet-model-zoo</artifactId>
 			<version>${djl.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>ai.djl.mxnet</groupId>
-			<artifactId>mxnet-native-mkl</artifactId>
-			<version>1.9.1</version>
-			<classifier>win-x86_64</classifier>
-			<scope>runtime</scope>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
-		<!-- CSV Processing -->
 		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.9</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>djl.ai</id>
-			<url>https://s3.amazonaws.com/djl.ai/repo/</url>
-		</repository>
-		<repository>
-			<id>aliyun</id>
-			<url>https://maven.aliyun.com/repository/public</url>
-		</repository>
-		<repository>
-			<id>central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</repository>
-	</repositories>
+
 	<build>
 		<plugins>
 			<plugin>

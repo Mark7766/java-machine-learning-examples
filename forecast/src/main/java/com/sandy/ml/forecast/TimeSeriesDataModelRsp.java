@@ -1,15 +1,14 @@
-package com.sandy.ml.time.trend;
+package com.sandy.ml.forecast;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-public class TimeSeriesDataModel {
-    private List<LocalDateTime> timestamps;
+public class TimeSeriesDataModelRsp {
+    private List<String> timestamps;
     private List<Float> values;
     private List<Float> predictions;
 
-    public List<LocalDateTime> getTimestamps() {
+    public List<String> getTimestamps() {
         return timestamps;
     }
 
@@ -20,7 +19,7 @@ public class TimeSeriesDataModel {
     public List<Float> getPredictions() {
         return predictions;
     }
-    public void setTimestamps(List<LocalDateTime> timestamps) {
+    public void setTimestamps(List<String> timestamps) {
         this.timestamps = timestamps;
     }
     public void setValues(List<Float> values) {
@@ -28,5 +27,14 @@ public class TimeSeriesDataModel {
     }
     public void setPredictions(List<Float> predictions) {
         this.predictions = predictions;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeSeriesDataModel{" +
+                "timestamps=" + timestamps +
+                ", values=" + values +
+                ", predictions=" + predictions +
+                '}';
     }
 }

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TimeTrend - 时间序列预测</title>
+    <!-- 使用 Chart.js 的 UMD 版本，确保非模块化加载 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <style>
+        /* 工业科技风格 */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1C2526;
+            color: #E0E0E0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            background: linear-gradient(145deg, #2A3439, #1C2526);
+            border: 2px solid #4A5A6B;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            color: #00A1D6;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.5em;
+            color: #E0E0E0;
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #E0E0E0;
+        }
+        input[type="file"] {
+            padding: 10px;
+            background-color: #2A3439;
+            border: 1px solid #4A5A6B;
+            color: #E0E0E0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #00A1D6;
+            color: #E0E0E0;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 161, 214, 0.3);
+        }
+        button:hover {
+            background-color: #008BB5;
+            transform: translateY(-2px);
+        }
+        .error {
+            color: #FF4C4C;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+        canvas {
+            background-color: rgba(28, 37, 38, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>TimeTrend: 时间序列预测</h1>
+    <form method="post" enctype="multipart/form-data" action="/upload">
+        <label for="file">上传 CSV 文件（格式：时间戳, 值）:</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+        <button type="submit">上传并预测</button>
+    </form>
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${dataModel != null and dataModel.timestamps != null and !dataModel.timestamps.isEmpty()}">
+        <h2>数据与预测</h2>
+        <canvas id="timeSeriesChart"></canvas>
+    </div>
+</div>
+<script th:inline="javascript">
+    // 确保 DOM 加载��成后再执行 Chart.js 逻辑
+    document.addEventListener('DOMContentLoaded', function() {
+        const timestamps = /*[[${dataModel.timestamps}]]*/ [];
+        const values = /*[[${dataModel.values}]]*/ [];
+        const predictions = /*[[${dataModel.predictions}]]*/ [];
+
+        if (Array.isArray(timestamps) && Array.isArray(values) && timestamps.length > 0 && values.length > 0) {
+            // 扩展时间戳以包含预测数据
+            const lastTimestamp = new Date(timestamps[timestamps.length - 1]);
+            const extendedTimestamps = [...timestamps];
+            const predictionCount = predictions.length;
+            const historicalCount = values.length;
+
+            // 假设为月度数据，生成预测的未来时间戳
+            for (let i = historicalCount; i < predictionCount; i++) {
+                const nextDate = new Date(lastTimestamp);
+                nextDate.setMonth(lastTimestamp.getMonth() + (i - historicalCount + 1));
+                extendedTimestamps.push(nextDate.toISOString().split('T')[0]);
+            }
+
+            // 格式化时间戳为显示格式
+            const formattedLabels = extendedTimestamps.map(t => new Date(t).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }));
+
+            // 准备历史数据和预测数据
+            const historicalData = values;
+            const predictionData = new Array(extendedTimestamps.length).fill(null);
+            for (let i = historicalCount; i < extendedTimestamps.length; i++) {
+                predictionData[i] = predictions[i - historicalCount];
+            }
+
+            const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: formattedLabels,
+                    datasets: [
+                        {
+                            label: '历史数据',
+                            data: historicalData,
+                            borderColor: '#00A1D6',
+                            backgroundColor: 'rgba(0, 161, 214, 0.2)',
+                            fill: false,
+                            tension: 0.1,
+                            pointBackgroundColor: '#E0E0E0'
+                        },
+                        {
+                            label: '预测数据',
+                            data: predictionData,
+                            borderColor: '#FF4C4C',
+                            backgroundColor: 'rgba(255, 76, 76, 0.2)',
+                            fill: false,
+                            borderDash: [5, 5],
+                            tension: 0.1,
+                            pointBackgroundColor: '#E0E0E0'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '日期',
+                                color: '#E0E0E0',
+                                font: { size: 14, family: 'Roboto Mono' }
+                            },
+                            ticks: { color: '#E0E0E0' },
+                            grid: { color: '#4A5A6B' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '值',
+                                color: '#E0E0E0',
+                                font: { size: 14, family: 'Roboto Mono' }
+                            },
+                            ticks: { color: '#E0E0E0' },
+                            grid: { color: '#4A5A6B' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#E0E0E0',
+                                font: { family: 'Roboto Mono' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

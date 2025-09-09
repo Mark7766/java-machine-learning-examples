@@ -1,4 +1,4 @@
-package com.sandy.ml.time.trend;
+package com.sandy.ml.forecast;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @Controller
 public class TimeSeriesController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeSeriesController.class);
 
     private final TimeSeriesService timeSeriesService;
 
@@ -28,7 +29,9 @@ public class TimeSeriesController {
     public String uploadFile(@RequestParam("file") MultipartFile file, Model model) {
         try {
             TimeSeriesDataModel dataModel = timeSeriesService.processCsvFile(file);
-            model.addAttribute("dataModel", dataModel);
+            TimeSeriesDataModelRsp rsp = dataModel.toTimeSeriesDataModelRsp();
+            log.info("Processed data model: {}", rsp);
+            model.addAttribute("dataModel", rsp);
         } catch (IOException e) {
             model.addAttribute("error", "Failed to process file: " + e.getMessage());
         }
