@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>能源预测</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>能源预测</h2>
+    <ul class="nav nav-tabs" id="mainTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab">配置</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="train-tab" data-bs-toggle="tab" data-bs-target="#train" type="button" role="tab">训练</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="model-tab" data-bs-toggle="tab" data-bs-target="#model" type="button" role="tab">模型</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="predict-tab" data-bs-toggle="tab" data-bs-target="#predict" type="button" role="tab">预测</button>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="mainTabContent">
+        <!-- 配置 -->
+        <div class="tab-pane fade show active" id="config" role="tabpanel">
+            <form th:action="@{/config/save}" th:object="${config}" method="post">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <label>预测步长</label>
+                        <input type="number" th:field="*{predictionLength}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>历史步长</label>
+                        <input type="number" th:field="*{contextLength}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>频率</label>
+                        <input type="text" th:field="*{freq}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>批处理方式</label>
+                        <input type="text" th:field="*{batchifier}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>LSTM层数</label>
+                        <input type="number" th:field="*{numLayers}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>隐藏单元数</label>
+                        <input type="number" th:field="*{hiddenSize}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>Dropout比例</label>
+                        <input type="number" step="0.01" th:field="*{dropoutRate}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>嵌入维度</label>
+                        <input type="number" th:field="*{embeddingDimension}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>训练轮数</label>
+                        <input type="number" th:field="*{epochs}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>学习率</label>
+                        <input type="number" step="0.0001" th:field="*{learningRate}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>每批次样本数</label>
+                        <input type="number" th:field="*{batchSize}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>优化器类型</label>
+                        <input type="text" th:field="*{optimizer}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>权重衰减</label>
+                        <input type="number" step="0.0001" th:field="*{weightDecay}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>提前停止</label>
+                        <input type="checkbox" th:field="*{earlyStopping}" class="form-check-input" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>提前停止容忍轮数</label>
+                        <input type="number" th:field="*{patience}" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>使用静态类别特征</label>
+                        <input type="checkbox" th:field="*{useFeatStaticCat}" class="form-check-input" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>使用静态数值特征</label>
+                        <input type="checkbox" th:field="*{useFeatStaticReal}" class="form-check-input" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>使用动态数值特征</label>
+                        <input type="checkbox" th:field="*{useFeatDynamicReal}" class="form-check-input" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>使用动态类别特征</label>
+                        <input type="checkbox" th:field="*{useFeatDynamicCat}" class="form-check-input" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>静态类别特征字段（逗号分隔）</label>
+                        <input type="text" th:field="*{staticCatFields}" class="form-control" placeholder="如: field1,field2" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>静态数值特征字段（逗号分隔）</label>
+                        <input type="text" th:field="*{staticRealFields}" class="form-control" placeholder="如: field1,field2" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>动态数值特征字段（逗号分隔）</label>
+                        <input type="text" th:field="*{dynamicRealFields}" class="form-control" placeholder="如: field1,field2" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>动态类别特征字段（逗号分隔）</label>
+                        <input type="text" th:field="*{dynamicCatFields}" class="form-control" placeholder="如: field1,field2" />
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label>采样样本数</label>
+                        <input type="number" th:field="*{numSamples}" class="form-control" />
+                    </div>
+                    <div class="col-md-8 mb-2">
+                        <label>分位点列表（逗号分隔，如0.1,0.5,0.9）</label>
+                        <input type="text" th:field="*{quantiles}" class="form-control" />
+                    </div>
+                </div>
+                <!-- 其余配置项同理，略 -->
+                <button type="submit" class="btn btn-primary">保存配置</button>
+                <span th:text="${message}" class="text-success ms-3"></span>
+            </form>
+        </div>
+        <!-- CSV训练区 -->
+        <div class="tab-pane fade" id="train" role="tabpanel">
+            <form id="csvUploadForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label>上传CSV文件</label>
+                    <input type="file" name="file" id="csvFileInput" class="form-control" />
+                </div>
+                <button type="button" id="uploadBtn" class="btn btn-success">解析并训练</button>
+            </form>
+            <div id="trainProgress" class="mt-3 text-info"></div>
+            <script>
+                document.getElementById('uploadBtn').onclick = function() {
+                    var fileInput = document.getElementById('csvFileInput');
+                    if (!fileInput.files.length) {
+                        alert('请选择CSV文件');
+                        return;
+                    }
+                    var formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    document.getElementById('trainProgress').innerText = '正在上传文件...';
+                    fetch('/data/uploadAndTrain', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(sessionId => {
+                        document.getElementById('trainProgress').innerText = '文件上传成功，训练即将开始...';
+                        // 轮询进度
+                        var interval = setInterval(function() {
+                            fetch('/data/trainProgress?sessionId=' + sessionId)
+                                .then(resp => resp.text())
+                                .then(progress => {
+                                    document.getElementById('trainProgress').innerText = progress;
+                                    if (progress.indexOf('训练完成') !== -1) {
+                                        clearInterval(interval);
+                                    }
+                                });
+                        }, 1500);
+                    });
+                };
+            </script>
+        </div>
+        <!-- 模型管理区 -->
+        <div class="tab-pane fade" id="model" role="tabpanel">
+            <h5>模型列表</h5>
+            <div id="modelListContainer"></div>
+        </div>
+        <script>
+        // 模型列表渲染和操作
+        function renderModelList(models) {
+            var html = '<ul class="list-group">';
+            models.forEach(function(model) {
+                html += '<li class="list-group-item d-flex justify-content-between align-items-center">';
+                html += '<span>' + (model.code || '未命名') + '</span>';
+                html += '<span class="badge bg-info ms-2">RMSE:' + (model.rmse || '-') + '</span>';
+                html += '<span class="badge bg-warning ms-2">CRPS:' + (model.crps || '-') + '</span>';
+                html += '<span class="badge bg-secondary ms-2">创建:' + (model.createdAt ? model.createdAt.replace('T',' ') : '-') + '</span>';
+                html += '<span class="badge ' + (model.enabled ? 'bg-success' : 'bg-danger') + ' ms-2">' + (model.enabled ? '已启用' : '未启用') + '</span>';
+                html += '<div>';
+                html += '<button class="btn btn-sm btn-outline-success me-1" onclick="enableModel(' + model.id + ')">启用</button>';
+                html += '<button class="btn btn-sm btn-outline-danger me-1" onclick="disableModel(' + model.id + ')">禁用</button>';
+                html += '</div>';
+                html += '</li>';
+            });
+            html += '</ul>';
+            document.getElementById('modelListContainer').innerHTML = html;
+        }
+        function fetchModelList() {
+            fetch('/data/models')
+                .then(resp => resp.json())
+                .then(models => renderModelList(models));
+        }
+        function enableModel(id) {
+            fetch('/data/model/enable', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'modelId=' + id
+            }).then(() => fetchModelList());
+        }
+        function disableModel(id) {
+            fetch('/data/model/disable', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'modelId=' + id
+            }).then(() => fetchModelList());
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchModelList();
+        });
+        </script>
+        <!-- 预测区 -->
+        <div class="tab-pane fade" id="predict" role="tabpanel">
+            <form th:action="@{/data/predict}" th:object="${param}" method="post">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label>itemId</label>
+                        <input type="text" th:field="*{itemId}" class="form-control" />
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label>起始时间</label>
+                        <input type="text" th:field="*{start}" class="form-control" />
+                    </div>
+                    <!-- 其余特征输入同理，略 -->
+                </div>
+                <button type="submit" class="btn btn-info">发起预测</button>
+            </form>
+            <div th:if="${forecast}" class="mt-2">
+                <h5>预测结果</h5>
+                <pre th:text="${forecast}"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
